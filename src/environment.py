@@ -1,12 +1,14 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from src.brick import Brick
+from src.robot import Robot
 
 class Environment:
-    def __init__(self, width, height):
+    def __init__(self, width, height, robot=None):
         self.width = width
         self.height = height
         self.bricks = []
+        self.robot = robot
 
     def add_brick(self, brick):
         if 0 <= brick.position[0] < self.width and 0 <= brick.position[1] < self.height:
@@ -29,8 +31,18 @@ class Environment:
             ax.text(x + 0.5, y + 0.5, f"B{brick.marker_ids[0]}/{brick.marker_ids[1]}",
                     ha='center', va='center', color='white')
 
+        if self.robot:
+            import math
+            # Draw robot
+            robot_patch = patches.Circle((self.robot.x, self.robot.y), radius=0.4, color='blue', alpha=0.7)
+            ax.add_patch(robot_patch)
+            # Draw heading line
+            ax.plot([self.robot.x, self.robot.x + 0.5 * math.cos(self.robot.heading)],
+                    [self.robot.y, self.robot.y + 0.5 * math.sin(self.robot.heading)],
+                    color='black', linewidth=2)
+
         plt.gca().set_aspect('equal', adjustable='box')
         plt.show()
 
     def __repr__(self):
-        return f"Environment(width={self.width}, height={self.height}, bricks={len(self.bricks)})"
+        return f"Environment(width={self.width}, height={self.height}, bricks={len(self.bricks)}, robot={self.robot})"
