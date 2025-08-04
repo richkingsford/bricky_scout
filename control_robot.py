@@ -13,11 +13,18 @@ def main():
     env.add_brick(Brick(position=(3, 2), marker_id1=12, marker_id2=13))
     env.add_brick(Brick(position=(4, 4), marker_id1=14, marker_id2=15))
 
-    def redraw():
+    def redraw(scan_results=None):
         os.system('clear' if os.name == 'posix' else 'cls')
         print("Robot Control")
-        print("f: forward, l: left, r: right, q: quit")
+        print("f: forward, l: left, r: right, s: scan, q: quit")
         print(env.robot)
+        if scan_results:
+            print("Scan Results:")
+            if scan_results:
+                for brick in scan_results:
+                    print(f"  - {brick}")
+            else:
+                print("  No bricks detected.")
         env.visualize()
 
     redraw()
@@ -25,19 +32,22 @@ def main():
     while True:
         try:
             action = input("Enter action: ").lower()
+            scan_results = None
             if action == 'f':
                 robot.move_forward(0.5)
             elif action == 'l':
                 robot.rotate_left(15)
             elif action == 'r':
                 robot.rotate_right(15)
+            elif action == 's':
+                scan_results = env.scan()
             elif action == 'q':
                 break
             else:
                 print("Invalid action.")
                 continue
 
-            redraw()
+            redraw(scan_results)
 
         except KeyboardInterrupt:
             print("\nExiting.")

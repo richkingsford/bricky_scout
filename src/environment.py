@@ -1,3 +1,4 @@
+import math
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from src.brick import Brick
@@ -15,6 +16,47 @@ class Environment:
             self.bricks.append(brick)
         else:
             raise ValueError("Brick position is outside the environment boundaries.")
+
+    def scan(self, max_view_distance=4.0):
+        if not self.robot:
+            return []
+
+        detected_bricks = []
+        robot_pos = (self.robot.x, self.robot.y)
+        fov_rad = math.radians(self.robot.fov_deg)
+
+        for brick in self.bricks:
+            brick_center = (brick.position[0] + 0.5, brick.position[1] + 0.5)
+
+            # Vector from robot to brick
+            vec_x = brick_center[0] - robot_pos[0]
+            vec_y = brick_center[1] - robot_pos[1]
+
+            # Distance to brick
+            distance = math.sqrt(vec_x**2 + vec_y**2)
+
+            if distance > max_view_distance:
+                continue
+
+            # Angle to brick
+            angle_to_brick = math.atan2(vec_y, vec_x)
+
+            # Normalize angles to be within [-pi, pi]
+            robot_heading = self.robot.heading % (2 * math.pi)
+            if robot_heading > math.pi:
+                robot_heading -= 2 * math.pi
+
+            angle_diff = angle_to_brick - robot_heading
+            # Normalize angle_diff to be within [-pi, pi]
+            if angle_diff > math.pi:
+                angle_diff -= 2 * math.pi
+            elif angle_diff < -math.pi:
+                angle_diff += 2 * math.pi
+
+            if abs(angle_diff) <= fov_rad / 2:
+                detected_bricks.append(brick)
+
+        return detected_bricks
 
     def visualize(self):
         fig, ax = plt.subplots()

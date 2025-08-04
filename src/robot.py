@@ -1,10 +1,11 @@
 import math
 
 class Robot:
-    def __init__(self, x, y, heading=0.0):
+    def __init__(self, x, y, heading=0.0, fov_deg=60.0):
         self.x = x
         self.y = y
         self.heading = heading  # Angle in radians
+        self.fov_deg = fov_deg
 
     def move_forward(self, distance):
         self.x += distance * math.cos(self.heading)
