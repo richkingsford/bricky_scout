@@ -2,11 +2,13 @@ import os
 from src.environment import Environment
 from src.robot import Robot
 from src.brick import Brick
+from src.logger import SessionLogger
 
 def main():
-    # Create a robot and environment
+    # Create a robot, environment, and logger
     robot = Robot(x=2.5, y=2.5)
     env = Environment(width=5, height=5, robot=robot)
+    logger = SessionLogger()
 
     # Add some bricks for context
     env.add_brick(Brick(position=(1, 1), marker_id1=10, marker_id2=11))
@@ -33,14 +35,19 @@ def main():
         try:
             action = input("Enter action: ").lower()
             scan_results = None
+
             if action == 'f':
                 robot.move_forward(0.5)
+                logger.add_entry(action="move_forward", robot_pose=robot)
             elif action == 'l':
                 robot.rotate_left(15)
+                logger.add_entry(action="rotate_left", robot_pose=robot)
             elif action == 'r':
                 robot.rotate_right(15)
+                logger.add_entry(action="rotate_right", robot_pose=robot)
             elif action == 's':
                 scan_results = env.scan()
+                logger.add_entry(action="scan", robot_pose=robot, detections=scan_results)
             elif action == 'q':
                 break
             else:
