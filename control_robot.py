@@ -49,6 +49,7 @@ def main():
                 scan_results = env.scan()
                 logger.add_entry(action="scan", robot_pose=robot, detections=scan_results)
             elif action == 'q':
+                logger.export_log()
                 break
             else:
                 print("Invalid action.")
